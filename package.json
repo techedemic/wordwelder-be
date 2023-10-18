@@ -1,0 +1,11 @@
+{
+  "name": "wordwelder-be",
+  "version": "1.0.0",
+  "description": "The back-end for the wordwelder sentence builder application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hendri Schoeman <hendrisch@gmail.com>",
+  "license": "ISC"
+}
