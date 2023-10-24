@@ -1,21 +1,12 @@
-import { PrismaClient } from "@prisma/client";
+import express, { Request, Response } from "express";
 
-const prisma = new PrismaClient();
+const app = express();
+const port = process.env.PORT || 3100;
 
-async function main() {
-  const sentence = await prisma.sentence.create({
-    data: {
-      sentence: "Hello world",
-    },
-  });
-}
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello");
+});
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
