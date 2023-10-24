@@ -37,6 +37,44 @@ app.get("/words/:wordType?", async (req: Request, res: Response) => {
   res.json(words);
 });
 
+app.post("/sentence", express.json(), async (req: Request, res: Response) => {
+  const sentence = req.body;
+  const sentenceSchema = z.array(z.number());
+
+  // Validate the input with Zod
+  const validationResult = sentenceSchema.safeParse(sentence);
+  if (!validationResult.success) {
+    res.status(400).send("Invalid input");
+    return;
+  }
+
+  // If validation is successful, create the sentence
+  const validSentence = validationResult.data;
+  const createdSentence = await prisma.sentence.create({
+    data: {}, //Simply an empty record with an id only. We use a linking table.
+  });
+
+  // Link the words to the sentence
+  const words = [];
+  for (const wordId of validSentence) {
+    await prisma.sentenceWord.create({
+      data: {
+        sentenceId: createdSentence.id,
+        wordId: wordId,
+      },
+    });
+    const word = await prisma.word.findUnique({ where: { id: wordId } });
+    words.push(word?.word);
+  }
+
+  res.status(201).json({
+    id: createdSentence.id,
+    createdAt: createdSentence.createdAt,
+    updatedAt: createdSentence.updatedAt,
+    words: words,
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
