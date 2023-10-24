@@ -30,9 +30,9 @@ app.get("/words/:wordType?", async (req: Request, res: Response) => {
     return;
   }
 
-  const words = wordType
-    ? await prisma.word.findMany({ where: { word_type: wordType } })
-    : await prisma.word.findMany();
+  const words = await prisma.word.findMany({
+    where: wordType ? { word_type: wordType } : undefined,
+  });
 
   res.json(words);
 });
