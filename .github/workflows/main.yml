@@ -8,6 +8,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env: # Set environment variables here
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
 
     steps:
       - name: Checkout code
