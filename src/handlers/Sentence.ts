@@ -5,15 +5,46 @@ import { z } from "zod";
 const router = express.Router();
 const prisma = new PrismaClient();
 
+export const sentenceSchema = {
+  type: "object",
+  properties: {
+    id: {
+      type: "integer",
+      format: "int64",
+    },
+    createdAt: {
+      type: "string",
+      format: "date-time",
+    },
+    updatedAt: {
+      type: "string",
+      format: "date-time",
+    },
+    words: {
+      type: "array",
+      items: {
+        type: "string",
+      },
+    },
+  },
+};
+
 /**
  * @openapi
  * /sentences:
  *   get:
- *     description: Returns all sentences
+ *     summary: Fetches all sentences
  *     responses:
  *       200:
- *         description: A list of sentences.
+ *         description: A list of sentences
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Sentence'
  */
+
 router.get("/sentences", async (req: Request, res: Response) => {
   try {
     // Fetch all sentences
@@ -42,6 +73,29 @@ router.get("/sentences", async (req: Request, res: Response) => {
     res.status(500).send("An error occurred while processing your request");
   }
 });
+
+/**
+ * @openapi
+ * /sentence:
+ *   post:
+ *     summary: Creates a new sentence with the provided word IDs
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: number
+ *               description: The IDs of the words to include in the sentence
+ *     responses:
+ *       201:
+ *         description: The created sentence
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/Sentence'
+ */
 
 router.post(
   "/sentence",
