@@ -38,54 +38,59 @@ router.post(
   "/sentence",
   express.json(),
   async (req: Request, res: Response) => {
-    const sentence = req.body;
-    const sentenceSchema = z.array(z.number());
+    try {
+      const sentence = req.body;
+      const sentenceSchema = z.array(z.number());
 
-    // Validate the input with Zod
-    const validationResult = sentenceSchema.safeParse(sentence);
-    if (!validationResult.success) {
-      res.status(400).send("Invalid input");
-      return;
-    }
+      // Validate the input with Zod
+      const validationResult = sentenceSchema.safeParse(sentence);
+      if (!validationResult.success) {
+        res.status(400).send("Invalid input");
+        return;
+      }
 
-    // If validation is successful, ensure that all the word id's exist in the database
-    const validSentence = validationResult.data;
-    const allWords = await prisma.word.findMany({
-      where: {
-        id: {
-          in: validSentence,
-        },
-      },
-    });
-
-    if (validSentence.length !== allWords.length) {
-      res.status(400).send("Some word IDs do not exist");
-      return;
-    }
-
-    const createdSentence = await prisma.sentence.create({
-      data: {}, //Simply an empty record with an id only. We use a linking table.
-    });
-
-    // Link the words to the sentence
-    const words = [];
-    for (const wordId of validSentence) {
-      await prisma.sentenceWord.create({
-        data: {
-          sentenceId: createdSentence.id,
-          wordId: wordId,
+      // If validation is successful, ensure that all the word id's exist in the database
+      const validSentence = validationResult.data;
+      const allWords = await prisma.word.findMany({
+        where: {
+          id: {
+            in: validSentence,
+          },
         },
       });
-      const word = await prisma.word.findUnique({ where: { id: wordId } });
-      words.push(word?.word);
-    }
 
-    res.status(201).json({
-      id: createdSentence.id,
-      createdAt: createdSentence.createdAt,
-      updatedAt: createdSentence.updatedAt,
-      words: words,
-    });
+      if (validSentence.length !== allWords.length) {
+        res.status(400).send("Some word IDs do not exist");
+        return;
+      }
+
+      const createdSentence = await prisma.sentence.create({
+        data: {}, //Simply an empty record with an id only. We use a linking table.
+      });
+
+      // Link the words to the sentence
+      const words = [];
+      for (const wordId of validSentence) {
+        await prisma.sentenceWord.create({
+          data: {
+            sentenceId: createdSentence.id,
+            wordId: wordId,
+          },
+        });
+        const word = await prisma.word.findUnique({ where: { id: wordId } });
+        words.push(word?.word);
+      }
+
+      res.status(201).json({
+        id: createdSentence.id,
+        createdAt: createdSentence.createdAt,
+        updatedAt: createdSentence.updatedAt,
+        words: words,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred while processing your request");
+    }
   }
 );
 
