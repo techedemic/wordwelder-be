@@ -31,4 +31,4 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: |
-          az webapp config container set --name ${{ secrets.BACKEND_APP_NAME }} --resource-group wordwelder --docker-custom-image-name ${{ secrets.ACR_REGISTRY }}/wordwelder-be:latest --docker-registry-server-url https://${{ secrets.ACR_REGISTRY }}
+          az webapp config container set --name ${{ secrets.BACKEND_APP_NAME }} --resource-group wordwelder-be_group --docker-custom-image-name ${{ secrets.ACR_REGISTRY }}/wordwelder-be:latest --docker-registry-server-url https://${{ secrets.ACR_REGISTRY }}
