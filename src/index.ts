@@ -3,6 +3,7 @@ import Sentence, { sentenceSchema } from "./handlers/Sentence";
 import Words, { wordSchema } from "./handlers/Words";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+import cors from "cors";
 
 const options = {
   definition: {
@@ -25,6 +26,9 @@ const openapiSpecification = swaggerJsdoc(options);
 
 const app = express();
 const port = process.env.PORT || 3100;
+
+//enable cors
+app.use(cors());
 
 // Swagger doc route
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
