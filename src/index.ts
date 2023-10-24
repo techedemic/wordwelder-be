@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import Sentence from "./handlers/Sentence";
 import Words from "./handlers/Words";
-import { z } from "zod";
 
 const app = express();
 const port = process.env.PORT || 3100;
