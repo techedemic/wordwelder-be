@@ -48,8 +48,21 @@ app.post("/sentence", express.json(), async (req: Request, res: Response) => {
     return;
   }
 
-  // If validation is successful, create the sentence
+  // If validation is successful, ensure that all the word id's exist in the database
   const validSentence = validationResult.data;
+  const allWords = await prisma.word.findMany({
+    where: {
+      id: {
+        in: validSentence,
+      },
+    },
+  });
+
+  if (validSentence.length !== allWords.length) {
+    res.status(400).send("Some word IDs do not exist");
+    return;
+  }
+
   const createdSentence = await prisma.sentence.create({
     data: {}, //Simply an empty record with an id only. We use a linking table.
   });
