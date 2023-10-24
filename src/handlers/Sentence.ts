@@ -5,6 +5,15 @@ import { z } from "zod";
 const router = express.Router();
 const prisma = new PrismaClient();
 
+/**
+ * @openapi
+ * /sentences:
+ *   get:
+ *     description: Returns all sentences
+ *     responses:
+ *       200:
+ *         description: A list of sentences.
+ */
 router.get("/sentences", async (req: Request, res: Response) => {
   try {
     // Fetch all sentences
