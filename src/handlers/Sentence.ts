@@ -132,7 +132,7 @@ router.post(
       });
 
       // Link the words to the sentence
-      const words = [];
+      const words: string[] = [];
       for (const wordId of validSentence) {
         await prisma.sentenceWord.create({
           data: {
@@ -141,7 +141,7 @@ router.post(
           },
         });
         const word = await prisma.word.findUnique({ where: { id: wordId } });
-        words.push(word?.word);
+        if (word) words.push(word.word);
       }
 
       res.status(201).json({
